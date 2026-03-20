@@ -1,0 +1,26 @@
+Get  http://localhost:5067/
+
+###
+
+POST http://localhost:5067/api/auth/register
+Content-Type: application/json
+
+{
+  "firstname": "Osemen",
+  "lastname": "Oseobonoite",
+  "email": "osemensilas@gmail.com",
+  "password1": "Bank$1011",
+  "password2": "Bank$101"
+}
+
+###
+
+POST http://localhost:5067/api/client/create-new-job
+Content-Type: application/json
+
+{
+  "description": "Osemen",
+  "budget": 100,
+  "duration": "osemensilas@gmail.com",
+  "skill": ["CSS"]
+}
