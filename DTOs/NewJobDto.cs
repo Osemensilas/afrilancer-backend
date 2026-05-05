@@ -18,5 +18,8 @@ namespace Afrilancer.DTOs
 
         [Required(ErrorMessage = "All field required")]
         public bool Paid = false;
+
+        [Required(ErrorMessage = "All field required")]
+        public string Status { get; set; } = "open";
     }
 }

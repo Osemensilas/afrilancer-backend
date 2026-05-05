@@ -12,6 +12,7 @@ namespace Afrilancer.Models
         public int Budget { get; set; } = 0;
         public string Skill { get; set; } = "[]";
         public bool Paid { get; set; } = false;
+        public string Status { get; set; } = "open";
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     }
 }

@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Afrilancer")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+87b9a749325aa5456d7d775b4b34e40a888ef6ed")]
 [assembly: System.Reflection.AssemblyProductAttribute("Afrilancer")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Afrilancer")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

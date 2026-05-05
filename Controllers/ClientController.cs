@@ -75,7 +75,7 @@ namespace Afrilancer.Controllers
 
         [Authorize]
         [HttpGet("get-client-jobs")]
-        public async Task<IActionResult> ClientJob()
+        public async Task<IActionResult> ClientJob([FromQuery] string filter)
         {
             if (!ModelState.IsValid)
             {
@@ -89,11 +89,47 @@ namespace Afrilancer.Controllers
                 return Unauthorized();
             }
 
-            var jobs = await _context.Jobs.Where(j => j.UserId == userId).ToListAsync();
+            var query = _context.Jobs.Where(j => j.UserId == userId);
+
+
+            if (filter == "jobs completed")
+            {
+                query = query.Where(j => j.Status == "completed");
+            }else if (filter == "jobs in progress")
+            {
+                query = query.Where(j => j.Status == "open");
+            }
+            
+            var jobs = await query.ToListAsync();
 
             return Ok(new {
                 message = "success",
                 jobs = jobs
+            });
+        }
+
+        [Authorize]
+        [HttpGet("get-reviews")]
+
+        public async Task<IActionResult> ClientReviews()
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (userId == null)
+            {
+                return Unauthorized();
+            }
+
+            var reviews = await _context.Reviews.Where(j => j.ReviewedId == userId).ToListAsync();
+
+            return Ok(new {
+                message = "success",
+                reviews = reviews
             });
         }
     }

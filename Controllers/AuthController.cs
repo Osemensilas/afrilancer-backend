@@ -196,15 +196,31 @@ namespace Afrilancer.Controllers
             {
                 status = "success",
                 message = "Login successful",
-                user_type = user.AccountType,
                 token = GenerateJwt(user),
+                user_type = user.AccountType,
                 user = new
                 {
-                    user.UserId,
-                    user.Email,
-                    user.FirstName,
-                    user.LastName
+                    userId = user.UserId,
+                    email = user.Email,
+                    firtname = user.FirstName,
+                    lastname = user.LastName,
+                    user_type = user.AccountType,
                 }
+            });
+        }
+
+        [HttpPost("logout")]
+        public async Task<object> Logout()
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            return Ok(new
+            {
+                status = "success",
+                message = "logout"
             });
         }
 

@@ -9,5 +9,7 @@ namespace Afrilancer.Data
 
         public DbSet<User> Users { get; set; }
         public DbSet<Job> Jobs { get; set; }
+        public DbSet<Review> Reviews { get; set; }
+        public DbSet<Skill> Skills { get; set; }
     }
 }
