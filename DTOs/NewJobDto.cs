@@ -5,6 +5,9 @@ namespace Afrilancer.DTOs
     public class NewJobDto
     {
         [Required(ErrorMessage = "All field required")]
+        public string Title { get; set; } = "";
+
+        [Required(ErrorMessage = "All field required")]
         public string Description { get; set; } = "";
 
         [Required(ErrorMessage = "All field required")]
@@ -12,6 +15,9 @@ namespace Afrilancer.DTOs
 
         [Required(ErrorMessage = "All field required")]
         public int Budget { get; set; } = 0;
+
+        [Required(ErrorMessage = "All field required")]
+        public int Coin { get; set; } = 0;
 
         [Required(ErrorMessage = "All field required")]
         public string Duration { get; set; } = "";

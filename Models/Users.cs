@@ -13,6 +13,9 @@ namespace Afrilancer.Models
         public bool EmailVerified { get; set; } = false;
         public string Token { get; set; } = "";
         public string AccountType { get; set; } = "";
+        public string Title { get; set; } = "";
+        public string Location { get; set; } = "";
+        public string Image { get; set; } = "";
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     }
 }

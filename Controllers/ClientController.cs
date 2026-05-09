@@ -51,15 +51,27 @@ namespace Afrilancer.Controllers
                 return Unauthorized();
             }
 
-             var projectId = $"PROJ-{Guid.NewGuid().ToString("N").Substring(0,16).ToUpper()}";
+            var projectId = $"PROJ-{Guid.NewGuid().ToString("N").Substring(0,16).ToUpper()}";
+
+            var coin = 0;
+            
+            if (dto.Budget < 50000){
+                coin = 10;
+            }else if (dto.Budget >= 50000 && dto.Budget < 100000){
+                coin = 20;
+            }else{
+                coin = 30;
+            }
 
             var project = new Job
             {
                 UserId = userId,
+                Title = dto.Title,
                 JobId = projectId,
                 Description = dto.Description,
                 Duration = dto.Duration,
                 Budget = dto.Budget,
+                Coin = coin,
                 Skill = JsonSerializer.Serialize(dto.Skill),
                 Paid = dto.Paid,
             };

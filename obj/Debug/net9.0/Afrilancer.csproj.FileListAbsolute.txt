@@ -139,3 +139,4 @@ C:\Users\USER\Desktop\My Files\Banks\dotnet\Afrilancer\bin\Debug\net9.0\Microsof
 C:\Users\USER\Desktop\My Files\Banks\dotnet\Afrilancer\bin\Debug\net9.0\Microsoft.IdentityModel.Protocols.dll
 C:\Users\USER\Desktop\My Files\Banks\dotnet\Afrilancer\bin\Debug\net9.0\Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
 C:\Users\USER\Desktop\My Files\Banks\dotnet\Afrilancer\obj\Debug\net9.0\Afrilancer.sourcelink.json
+C:\Users\USER\Desktop\My Files\Banks\dotnet\Afrilancer\bin\Debug\net9.0\Afrilancer.staticwebassets.runtime.json

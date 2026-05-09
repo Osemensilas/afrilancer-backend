@@ -91,6 +91,20 @@ namespace Afrilancer.Controllers
                 await _context.SaveChangesAsync();
             }
 
+            var coinDb = _context.Users.FirstOrDefault(u => u.UserId == userId);
+
+            if (coinDb == null)
+            {
+                var newCoin = new Coin 
+                {
+                    UserId = userId,
+                    Amount = 1000
+                };
+
+                _context.Coins.Add(newCoin);
+                await _context.SaveChangesAsync();
+            }
+
             var newEmail = dto.Email;
 
             try
@@ -262,6 +276,244 @@ namespace Afrilancer.Controllers
                     message = ex.Message 
                 };
             }
+        }
+
+        [Authorize]
+        [HttpPost("add-basic")]
+        public async Task<IActionResult> UpdateBasic([FromBody] BasicDto dto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (userId == null)
+            {
+                return Unauthorized();
+            }
+
+            var userDb = await _context.Users.FirstOrDefaultAsync(u => u.UserId == userId);
+
+            if (userDb != null)
+            {
+                userDb.Title = dto.Title;
+                userDb.Location = dto.Location;
+                await _context.SaveChangesAsync();
+            }
+
+            return Ok(new
+            {
+                status = "success",
+                message = "updated successfully",
+                dto = dto
+            });
+        }
+
+        [Authorize]
+        [HttpPost("verify-phone")]
+        public async Task<IActionResult> VerifyPhone()
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (userId == null)
+            {
+                return Unauthorized();
+            }
+
+            var skillsDb = await _context.Skills.FirstOrDefaultAsync(u => u.UserId == userId);
+
+            var phoneNumber = skillsDb?.Phone;
+
+            var random = new Random();
+
+            var otp = random.Next(100000, 999999).ToString();
+
+            if (skillsDb == null){
+                return Ok(new
+                {
+                    status = "error",
+                    message = "User dont have phone number"
+                });
+            }
+
+            skillsDb.PhoneOtp = otp;
+            skillsDb.PhoneOtpExpiry = DateTime.UtcNow.AddMinutes(5);
+
+            await _context.SaveChangesAsync();
+
+            return Ok(new {
+                status = "success",
+                message = "Verification code sent successfully",
+                phone_number = phoneNumber,
+                otp = otp
+            });
+        }
+
+        [Authorize]
+        [HttpPost("verify-phone-code")]
+        public async Task<IActionResult> VerifyPhoneCode([FromBody] PhoneCodeDto dto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(new 
+                {
+                    status = "error", 
+                    message = "Invalid Request"
+                });
+            }
+
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (userId == null)
+            {
+                return Unauthorized(new 
+                {
+                    status = "error",
+                    message = "You do not have permission"
+                });
+            }
+
+            var skillsDb = await _context.Skills.FirstOrDefaultAsync(u => u.UserId == userId);
+
+            if (skillsDb?.PhoneOtpExpiry == null || skillsDb.PhoneOtpExpiry < DateTime.UtcNow)
+            {
+                return BadRequest(new 
+                {
+                    status = "error",
+                    message = "OTP expired"
+                });
+            }
+
+            if (skillsDb.PhoneOtp != dto.Code)
+            {
+                return BadRequest(new 
+                {
+                    status = "error",
+                    message = "Invalid OTP"
+                });
+            }
+
+            skillsDb.PhoneVerified = true;
+
+            await _context.SaveChangesAsync();
+
+            return Ok(new 
+            {
+                status = "success",
+                message = "Phone number verified",
+                dto = dto
+            });
+        }
+
+        [Authorize]
+        [HttpPost("save-profile-image")]
+        public async Task<IActionResult> SaveUserImage([FromForm] SaveImageDto dto) {
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(new 
+                {
+                    status = "error", 
+                    message = "Invalid Request"
+                });
+            }
+
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (userId == null)
+            {
+                return Unauthorized(new 
+                {
+                    status = "error",
+                    message = "You do not have permission"
+                });
+            }
+
+            var userDb = await _context.Users.FirstOrDefaultAsync(u => u.UserId == userId);
+            var message = "";
+
+            if (dto.Image == null || dto.Image.Length == 0)
+            {
+                return BadRequest(new
+                {
+                    status = "error",
+                    message = "No image selected"
+                });
+            }
+
+            var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/uploads/users");
+
+            if (!Directory.Exists(uploadsFolder))
+            {
+                Directory.CreateDirectory(uploadsFolder);
+            }
+
+            var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".webp" };
+
+            var extension = Path.GetExtension(dto.Image.FileName).ToLower();
+
+            if (!allowedExtensions.Contains(extension))
+            {
+                return BadRequest(new
+                {
+                    status = "error",
+                    message = "Invalid image format"
+                });
+            }
+
+            if (dto.Image.Length > 1 * 1024 * 1024)
+            {
+                return BadRequest(new
+                {
+                    status = "error",
+                    message = "Image too large"
+                });
+            }
+
+            var allowedTypes = new[] 
+            {
+                "image/jpeg",
+                "image/png",
+                "image/webp"
+            };
+
+            if (!allowedTypes.Contains(dto.Image.ContentType))
+            {
+                return BadRequest(new
+                {
+                    status = "error",
+                    message = "Invalid file type"
+                });
+            }
+
+            var fileName = $"{Guid.NewGuid()}{extension}";
+
+            var filePath = Path.Combine(uploadsFolder, fileName);
+
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await dto.Image.CopyToAsync(stream);
+            }
+
+            userDb.Image = $"/uploads/users/{fileName}";
+
+            await _context.SaveChangesAsync();
+
+            message = "Image uploaded successfully";
+
+            return Ok(new 
+            {
+                status = "success",
+                message = message,
+                dto = dto
+            });
         }
 
         private string GenerateJwt(User user)
